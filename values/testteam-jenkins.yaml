@@ -19,6 +19,8 @@ controller:
         name: traefik-gateway
         namespace: traefik
         sectionName: web
+    annotations:
+      link.argocd.argoproj.io/external-link: http://devteam-jenkins.localhost
     hostnames:
       - testteam-jenkins.localhost
 
