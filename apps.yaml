@@ -1,0 +1,67 @@
+projects:
+  jenkins-instances:
+    description: "Jenkins instances for different teams and environments"
+    namespace: argocd
+    sourceRepos: ['*']
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+    destinations:
+      - namespace: '*'
+        server: '*'
+
+
+applications:
+  devteam-jenkins:
+    project: jenkins-instances
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    sources:
+      - repoURL: https://charts.jenkins.io/
+        chart: jenkins
+        targetRevision: "*"
+        helm:
+          releaseName: devteam
+          valueFiles:
+            - $repo/values/devteam-jenkins.yaml
+      - repoURL: https://github.com/sivanesh-dsp/jenkins-app-of-apps.git
+        targetRevision: main
+        ref: repo
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: devteam-jenkins
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - createNamespace=true
+
+  testteam-jenkins:
+    project: jenkins-instances
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    sources:
+      - repoURL: https://charts.jenkins.io/
+        chart: jenkins
+        targetRevision: "*"
+        helm:
+          releaseName: testteam
+          valueFiles:
+            - $repo/values/testteam-jenkins.yaml
+      - repoURL: https://github.com/sivanesh-dsp/jenkins-app-of-apps.git
+        targetRevision: main
+        ref: repo
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: testteam-jenkins
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - ApplyOutOfSyncOnly=true
+        - createNamespace=true

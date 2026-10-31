@@ -1,0 +1,27 @@
+controller:
+  jenkinsUrl: http://devteam-jenkins.localhost
+  javaOpts: "-Djenkins.install.runSetupWizard=false"
+
+  admin:
+    createSecret: false
+
+  JCasC:
+    # Empty realm (no login) + unsecured auth, since no admin user is created
+    securityRealm: ""
+    authorizationStrategy: |-
+      unsecured
+
+  httpRoute:
+    enabled: true
+    parentRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: traefik-gateway
+        namespace: traefik
+        sectionName: web
+    hostnames:
+      - devteam-jenkins.localhost
+
+# JENKINS_HOME uses an emptyDir; all state is lost on pod restart
+persistence:
+  enabled: false
